@@ -83,6 +83,7 @@
                             <group string="Contact &amp; Safety">
                                 <field name="contact_number"/>
                                 <field name="safety_score"/>
+                                <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"/>
                                 <!-- TODO (Person A): Add widget="progressbar" for safety_score -->
                             </group>
                         </group>

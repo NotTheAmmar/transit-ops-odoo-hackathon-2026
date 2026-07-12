@@ -48,6 +48,16 @@ class TransitDriver(models.Model):
     )
     contact_number = fields.Char(string='Contact Number')
 
+    # ── User Association ───────────────────────────────────────────────────────
+    user_ids = fields.Many2many(
+        comodel_name='res.users',
+        relation='transit_driver_user_rel',
+        column1='driver_id',
+        column2='user_id',
+        string='Related Users',
+        help='Odoo users associated with this driver.',
+    )
+
     # ── Safety & Status ────────────────────────────────────────────────────────
     safety_score = fields.Float(
         string='Safety Score',
