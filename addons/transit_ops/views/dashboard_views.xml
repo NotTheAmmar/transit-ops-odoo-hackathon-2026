@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Dashboard Views
+    ===============
+    Owner: Person D
+
+    Registers the OWL dashboard component as a client action and
+    wires it to a menu item.
+-->
+<odoo>
+    <data>
+
+        <!-- Client action that loads the OWL dashboard component -->
+        <record id="action_transit_dashboard" model="ir.actions.client">
+            <field name="name">TransitOps Dashboard</field>
+            <!-- This tag must match the registry key in dashboard.js -->
+            <field name="tag">transit_ops.Dashboard</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             MODULE CATEGORY
+             ═══════════════════════════════════════════════════════════════════ -->
+        <record id="module_category_transit_ops" model="ir.module.category">
+            <field name="name">TransitOps</field>
+            <field name="description">Smart Transport Operations Platform</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECURITY GROUPS
+             Hierarchy (implied_ids):
+               Driver ← Safety Officer
+               Driver ← Financial Analyst
+               Driver + Safety Officer + Financial Analyst ← Fleet Manager
+             ═══════════════════════════════════════════════════════════════════ -->
+
+        <!-- Group: Driver (base level) -->
+        <record id="group_transit_driver" model="res.groups">
+            <field name="name">Driver</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">
+                Can create and manage their own trips.
+                Can view vehicles and drivers.
+            </field>
+        </record>
+
+        <!-- Group: Safety Officer -->
+        <record id="group_transit_safety_officer" model="res.groups">
+            <field name="name">Safety Officer</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="comment">
+                Inherits Driver permissions.
+                Can update driver safety scores and status.
+                Can view all records.
+            </field>
+        </record>
+
+        <!-- Group: Financial Analyst -->
+        <record id="group_transit_financial_analyst" model="res.groups">
+            <field name="name">Financial Analyst</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[(4, ref('group_transit_driver'))]"/>
+            <field name="comment">
+                Inherits Driver permissions.
+                Can create and manage Fuel Logs and Expenses.
+                Can view all records.
+            </field>
+        </record>
+
+        <!-- Group: Fleet Manager (full access — inherits everything) -->
+        <record id="group_transit_fleet_manager" model="res.groups">
+            <field name="name">Fleet Manager</field>
+            <field name="category_id" ref="module_category_transit_ops"/>
+            <field name="implied_ids" eval="[
+                (4, ref('group_transit_driver')),
+                (4, ref('group_transit_safety_officer')),
+                (4, ref('group_transit_financial_analyst')),
+            ]"/>
+            <field name="comment">
+                Full CRUD access to all TransitOps models.
+                Can manage vehicles, drivers, trips, maintenance, and financials.
+            </field>
+        </record>
+
+        <!-- TODO (Person D): Add Record Rules here if row-level access is needed.
+             Example: Drivers can only view/edit their own trips.
+             <record id="rule_driver_own_trips" model="ir.rule">
+                 <field name="name">Drivers: Own Trips Only</field>
+                 <field name="model_id" ref="model_transit_trip"/>
+                 <field name="domain_force">[('driver_id.user_ids', 'in', [user.id])]</field>
+                 <field name="groups" eval="[(4, ref('group_transit_driver'))]"/>
+             </record>
+        -->
+
+    </data>
+</odoo>

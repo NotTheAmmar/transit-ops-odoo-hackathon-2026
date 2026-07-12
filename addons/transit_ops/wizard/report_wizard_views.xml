@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Owner: Person A -->
+<odoo>
+    <data>
+
+        <record id="view_transit_report_wizard_form" model="ir.ui.view">
+            <field name="name">transit.report.wizard.form</field>
+            <field name="model">transit.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Generate Report">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group>
+                            <field name="export_type" widget="radio"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_generate_report" string="Generate" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_transit_report_wizard" model="ir.actions.act_window">
+            <field name="name">Export Reports</field>
+            <field name="res_model">transit.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menu item for wizard -->
+        <menuitem id="menu_transit_report_export"
+                  name="Export Reports"
+                  parent="menu_transit_reports"
+                  action="action_transit_report_wizard"
+                  sequence="20"/>
+
+    </data>
+</odoo>

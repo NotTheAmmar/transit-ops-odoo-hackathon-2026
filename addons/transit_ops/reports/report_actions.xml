@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Report Actions
+    ==============
+    Owner: Person A
+
+    Defines the report actions for printing PDFs.
+-->
+<odoo>
+    <data>
+        <!-- Placeholder action for printing PDF -->
+        <!--
+        <record id="action_report_fleet_summary" model="ir.actions.report">
+            <field name="name">Fleet Summary</field>
+            <field name="model">transit.vehicle</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">transit_ops.report_fleet_summary</field>
+            <field name="report_file">transit_ops.report_fleet_summary</field>
+            <field name="binding_model_id" ref="model_transit_vehicle"/>
+            <field name="binding_type">report</field>
+        </record>
+        -->
+    </data>
+</odoo>
