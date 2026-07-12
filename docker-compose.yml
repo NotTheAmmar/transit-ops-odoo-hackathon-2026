@@ -4,13 +4,13 @@ services:
     container_name: transit_ops_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-odoo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-odoo}
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -25,10 +25,10 @@ services:
     ports:
       - "8069:8069"
     environment:
-      HOST: db
-      PORT: 5432
-      USER: odoo
-      PASSWORD: odoo
+      HOST: ${ODOO_HOST:-db}
+      PORT: ${ODOO_PORT:-5432}
+      USER: ${ODOO_USER:-odoo}
+      PASSWORD: ${ODOO_PASSWORD:-odoo}
     volumes:
       - ./odoo.conf:/etc/odoo/odoo.conf
       - ./addons:/mnt/extra-addons
@@ -38,3 +38,4 @@ services:
 volumes:
   db_data:
   odoo_data:
+

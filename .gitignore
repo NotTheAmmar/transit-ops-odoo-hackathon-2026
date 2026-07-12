@@ -1,0 +1,26 @@
+# Odoo Configuration
+odoo.conf
+
+# Environment Variables
+.env
+
+# Odoo / PostgreSQL data directories (if created locally)
+odoo_data/
+db_data/
+
+# Python Compiled Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# OS / Editor Files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Log files
+*.log

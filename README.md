@@ -10,11 +10,16 @@ Follow these steps to spin up the local development environment:
 - Docker and Docker Compose installed.
 
 ### Setup Instructions
-1. Run the containers:
+1. Copy the environment variables template:
+   ```bash
+   cp .env.example .env
+   ```
+2. Run the containers:
    ```bash
    docker compose up -d
    ```
-2. Open your web browser and go to `http://localhost:8069`.
+3. Open your web browser and go to `http://localhost:8069`.
+
 3. Create a new database with name `transit_ops` (or let Odoo create it default). Use Master Password `admin123` if prompted.
 4. Log in (default master password is in `odoo.conf`).
 5. Go to **Apps**, search for `transit_ops` (remove the `Apps` filter if it doesn't show up), and click **Activate/Install**.
