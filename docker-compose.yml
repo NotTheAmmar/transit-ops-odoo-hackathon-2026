@@ -10,7 +10,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-odoo}" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -33,7 +33,7 @@ services:
       - ./odoo.conf:/etc/odoo/odoo.conf
       - ./addons:/mnt/extra-addons
       - odoo_data:/var/lib/odoo
-    command: odoo --config /etc/odoo/odoo.conf
+    command: odoo --config /etc/odoo/odoo.conf -d transit_ops -i transit_ops
 
 volumes:
   db_data:

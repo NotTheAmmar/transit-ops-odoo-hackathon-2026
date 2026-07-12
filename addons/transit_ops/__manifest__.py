@@ -42,8 +42,8 @@
     'assets': {
         'web.assets_backend': [
             'transit_ops/static/src/css/dashboard.css',
-            'transit_ops/static/src/xml/dashboard.xml',
             'transit_ops/static/src/js/dashboard.js',
+            'transit_ops/static/src/xml/dashboard.xml',
         ],
     },
     'application': True,
