@@ -82,8 +82,7 @@
                             </group>
                             <group string="Contact &amp; Safety">
                                 <field name="contact_number"/>
-                                <field name="safety_score"/>
-                                <!-- TODO (Person A): Add widget="progressbar" for safety_score -->
+                                <field name="safety_score" widget="progressbar"/>
                             </group>
                         </group>
                         <notebook>
