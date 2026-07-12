@@ -139,14 +139,7 @@ class TransitVehicle(models.Model):
     @api.depends('fuel_log_ids.cost', 'maintenance_ids.cost', 'acquisition_cost')
     def _compute_costs(self):
         """
-        TODO (Person A): Implement cost aggregation.
-
-        For each vehicle:
-          - total_fuel_cost       = sum of fuel_log_ids.cost
-          - total_maintenance_cost= sum of maintenance_ids.cost
-          - total_operational_cost= total_fuel_cost + total_maintenance_cost
-          - vehicle_roi           = (revenue - total_operational_cost) / acquisition_cost
-            (revenue field not in spec — leave as 0 or add a revenue field)
+        Computes cost aggregation for the vehicle.
         """
         for vehicle in self:
             vehicle.total_fuel_cost = sum(vehicle.fuel_log_ids.mapped('cost'))
@@ -169,7 +162,7 @@ class TransitVehicle(models.Model):
 
     # ── Smart Button Actions ───────────────────────────────────────────────────
     def action_view_trips(self):
-        """TODO (Person A): Return action to open trips filtered by this vehicle."""
+        """Return action to open trips filtered by this vehicle."""
         return {
             'type': 'ir.actions.act_window',
             'name': 'Trips',
@@ -180,7 +173,7 @@ class TransitVehicle(models.Model):
         }
 
     def action_view_maintenance(self):
-        """TODO (Person A): Return action to open maintenance filtered by this vehicle."""
+        """Return action to open maintenance filtered by this vehicle."""
         return {
             'type': 'ir.actions.act_window',
             'name': 'Maintenance Logs',

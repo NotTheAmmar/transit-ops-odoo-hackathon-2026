@@ -17,7 +17,7 @@
                     <field name="date_end"/>
                     <field name="cost"/>
                     <field name="state" widget="badge"
-                           decoration-secondary="state == 'draft'"
+                           decoration-muted="state == 'draft'"
                            decoration-warning="state == 'open'"
                            decoration-success="state == 'done'"/>
                 </list>

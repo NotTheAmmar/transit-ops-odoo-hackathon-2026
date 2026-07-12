@@ -4,11 +4,6 @@
     ============
     Owner: Person A
 
-    TODO:
-    1. Form view: Add license expiry warning banner when is_license_expired = True
-    2. Form view: Add safety score progress bar widget
-    3. List view: Highlight rows with expired licenses in red
-    4. Search: Add filter for "Expired License"
 -->
 <odoo>
     <data>
@@ -58,12 +53,7 @@
                             </button>
                         </div>
 
-                        <!-- TODO (Person A): Add a warning banner for expired license:
-                             <div class="alert alert-danger" role="alert"
-                                  invisible="not is_license_expired">
-                                 ⚠️ This driver's license is expired! They cannot be assigned to trips.
-                             </div>
-                        -->
+
                         <div class="alert alert-danger" role="alert"
                              invisible="not is_license_expired">
                             <strong>⚠️ License Expired!</strong>

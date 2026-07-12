@@ -37,7 +37,7 @@
                     <field name="cargo_weight"/>
                     <field name="planned_distance"/>
                     <field name="state" widget="badge"
-                           decoration-secondary="state == 'draft'"
+                           decoration-muted="state == 'draft'"
                            decoration-info="state == 'dispatched'"
                            decoration-success="state == 'completed'"
                            decoration-danger="state == 'cancelled'"/>

@@ -4,23 +4,6 @@
     =============
     Owner: Person A
 
-    TODO:
-    1. Build the Form view with:
-       - Status bar widget for 'status' field
-       - Smart buttons for trips count and maintenance count
-       - Field groups: Identity | Capacity & Odometer | Financials
-       - Chatter (message thread) at the bottom
-
-    2. Build the List (tree) view with:
-       - Key columns: registration_number, name, vehicle_type, status, max_load_capacity, region
-       - decoration-danger for 'retired'
-       - decoration-warning for 'in_shop'
-       - decoration-success for 'available'
-
-    3. Build the Search view with:
-       - Search by registration number, name
-       - Filters: Available, On Trip, In Shop, Retired
-       - Group By: vehicle_type, region, status
 -->
 <odoo>
     <data>
@@ -57,13 +40,11 @@
             <field name="model">transit.vehicle</field>
             <field name="arch" type="xml">
                 <form string="Vehicle">
-                    <!-- TODO (Person A): Add status bar and smart buttons here -->
                     <header>
                         <field name="status" widget="statusbar"
                                statusbar_visible="available,on_trip,in_shop,retired"/>
                     </header>
                     <sheet>
-                        <!-- TODO (Person A): Add smart buttons for trips & maintenance counts -->
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" type="object"
                                     name="action_view_trips" icon="fa-truck">
@@ -93,7 +74,6 @@
                                 <field name="acquisition_cost"/>
                             </group>
                         </group>
-                        <!-- TODO (Person A): Add Financials tab with computed cost fields -->
                         <notebook>
                             <page string="Financial Summary">
                                 <group>

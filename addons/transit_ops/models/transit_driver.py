@@ -100,7 +100,7 @@ class TransitDriver(models.Model):
 
     # ── Smart Button Action ────────────────────────────────────────────────────
     def action_view_trips(self):
-        """TODO (Person A): Return action to open trips filtered by this driver."""
+        """Return action to open trips filtered by this driver."""
         return {
             'type': 'ir.actions.act_window',
             'name': 'Trips',
