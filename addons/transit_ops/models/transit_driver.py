@@ -20,6 +20,7 @@ class TransitDriver(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # ── Identity ──────────────────────────────────────────────────────────────
+    image_1920 = fields.Image("Driver Image", max_width=1920, max_height=1920)
     name = fields.Char(
         string='Full Name',
         required=True,

@@ -3,22 +3,22 @@
     <data>
         <template id="report_fleet_summary">
             <t t-call="web.html_container">
-                <t t-foreach="docs" t-as="doc">
-                    <t t-call="web.external_layout">
-                        <div class="page">
-                            <h2>Fleet Summary</h2>
-                            <table class="table table-sm table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Registration</th>
-                                        <th>Name</th>
-                                        <th>Type</th>
-                                        <th>Status</th>
-                                        <th>Region</th>
-                                        <th>Total Op. Cost</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Fleet Summary</h2>
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Registration</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Region</th>
+                                    <th>Total Op. Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="docs" t-as="doc">
                                     <tr>
                                         <td><t t-esc="doc.registration_number"/></td>
                                         <td><t t-esc="doc.name"/></td>
@@ -27,10 +27,10 @@
                                         <td><t t-esc="doc.region or 'N/A'"/></td>
                                         <td><t t-esc="doc.total_operational_cost"/></td>
                                     </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </t>
             </t>
         </template>

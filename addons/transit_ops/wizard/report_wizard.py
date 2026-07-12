@@ -44,15 +44,33 @@ class TransitReportWizard(models.TransientModel):
             'Region', 'Fuel Cost', 'Maintenance Cost', 'Total Op. Cost'
         ])
         for v in vehicles:
+            fuel_domain = [('vehicle_id', '=', v.id)]
+            maint_domain = [('vehicle_id', '=', v.id)]
+            expense_domain = [('vehicle_id', '=', v.id)]
+            
+            if self.date_from:
+                fuel_domain.append(('date', '>=', self.date_from))
+                maint_domain.append(('date_start', '>=', self.date_from))
+                expense_domain.append(('date', '>=', self.date_from))
+            if self.date_to:
+                fuel_domain.append(('date', '<=', self.date_to))
+                maint_domain.append(('date_start', '<=', self.date_to))
+                expense_domain.append(('date', '<=', self.date_to))
+                
+            fuel_cost = sum(self.env['transit.fuel.log'].search(fuel_domain).mapped('cost'))
+            maint_cost = sum(self.env['transit.maintenance'].search(maint_domain).mapped('cost'))
+            other_cost = sum(self.env['transit.expense'].search(expense_domain).mapped('amount'))
+            total_op_cost = fuel_cost + maint_cost + other_cost
+
             writer.writerow([
                 v.registration_number,
                 v.name,
                 v.vehicle_type,
                 v.status,
                 v.region or '',
-                v.total_fuel_cost,
-                v.total_maintenance_cost,
-                v.total_operational_cost,
+                fuel_cost,
+                maint_cost,
+                total_op_cost,
             ])
         csv_data = base64.b64encode(output.getvalue().encode())
         attachment = self.env['ir.attachment'].create({

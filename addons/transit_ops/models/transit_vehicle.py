@@ -20,6 +20,7 @@ class TransitVehicle(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     # ── Identity ──────────────────────────────────────────────────────────────
+    image_1920 = fields.Image("Vehicle Image", max_width=1920, max_height=1920)
     registration_number = fields.Char(
         string='Registration Number',
         required=True,
@@ -31,6 +32,8 @@ class TransitVehicle(models.Model):
         required=True,
         help='e.g. "Toyota Hiace Van" or "Van-05"',
     )
+    make = fields.Char(string='Make', help='e.g. Toyota, Ford')
+    model_year = fields.Char(string='Model Year', help='e.g. 2024')
     vehicle_type = fields.Selection(
         selection=[
             ('truck', 'Truck'),
@@ -187,6 +190,10 @@ class TransitVehicle(models.Model):
         compute='_compute_maintenance_due',
         store=True,
     )
+
+    # ── Compliance & Insurance ────────────────────────────────────────────────
+    insurance_policy_number = fields.Char(string='Insurance Policy Number')
+    insurance_expiry_date = fields.Date(string='Insurance Expiry Date', tracking=True)
 
     # ── Constraints ────────────────────────────────────────────────────────────
     _sql_constraints = [
