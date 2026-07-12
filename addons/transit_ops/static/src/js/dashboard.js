@@ -2,6 +2,7 @@
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { rpc } from "@web/core/network/rpc";
 
 /**
  * TransitOps OWL Dashboard
@@ -14,7 +15,6 @@ import { useService } from "@web/core/utils/hooks";
  */
 export class TransitDashboard extends Component {
     setup() {
-        this.rpc = useService("rpc");
         this.state = useState({
             kpi: {
                 active_vehicles: 0,
@@ -41,7 +41,7 @@ export class TransitDashboard extends Component {
     async loadDashboardData() {
         try {
             // TODO (Person D): Pass state.filters to the RPC call once filters are implemented in view
-            const data = await this.rpc("/transit_ops/dashboard_data", {});
+            const data = await rpc("/transit_ops/dashboard_data", {});
             this.state.kpi = data;
         } catch (error) {
             console.error("Failed to load dashboard data", error);
