@@ -46,7 +46,7 @@
                            decoration-warning="status == 'in_shop'"
                            decoration-info="status == 'on_trip'"
                            decoration-danger="status == 'retired'"/>
-                    <!-- TODO (Person A): Add total_operational_cost column -->
+                    <field name="total_operational_cost" string="Op. Cost"/>
                 </list>
             </field>
         </record>
