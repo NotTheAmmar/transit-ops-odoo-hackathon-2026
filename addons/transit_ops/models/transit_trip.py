@@ -62,13 +62,11 @@ class TransitTrip(models.Model):
     vehicle_id = fields.Many2one(
         comodel_name='transit.vehicle',
         string='Vehicle',
-        required=True,
         tracking=True,
     )
     driver_id = fields.Many2one(
         comodel_name='transit.driver',
         string='Driver',
-        required=True,
         tracking=True,
     )
 
@@ -255,6 +253,11 @@ class TransitTrip(models.Model):
         for trip in self:
             if trip.state != 'draft':
                 raise UserError('Only Draft trips can be dispatched.')
+
+            if not trip.vehicle_id:
+                raise UserError('Please assign a vehicle before dispatching the trip.')
+            if not trip.driver_id:
+                raise UserError('Please assign a driver before dispatching the trip.')
 
             # Re-check vehicle status at dispatch time
             if trip.vehicle_id.status != 'available':
