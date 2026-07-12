@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Vehicle Views
+    =============
+    Owner: Person A
+
+    TODO:
+    1. Build the Form view with:
+       - Status bar widget for 'status' field
+       - Smart buttons for trips count and maintenance count
+       - Field groups: Identity | Capacity & Odometer | Financials
+       - Chatter (message thread) at the bottom
+
+    2. Build the List (tree) view with:
+       - Key columns: registration_number, name, vehicle_type, status, max_load_capacity, region
+       - decoration-danger for 'retired'
+       - decoration-warning for 'in_shop'
+       - decoration-success for 'available'
+
+    3. Build the Search view with:
+       - Search by registration number, name
+       - Filters: Available, On Trip, In Shop, Retired
+       - Group By: vehicle_type, region, status
+-->
+<odoo>
+    <data>
+
+        <!-- ── List View ─────────────────────────────────────────────────────── -->
+        <record id="view_transit_vehicle_list" model="ir.ui.view">
+            <field name="name">transit.vehicle.list</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <list string="Vehicles"
+                      decoration-danger="status == 'retired'"
+                      decoration-warning="status == 'in_shop'"
+                      decoration-info="status == 'on_trip'"
+                      decoration-success="status == 'available'">
+                    <field name="registration_number"/>
+                    <field name="name"/>
+                    <field name="vehicle_type"/>
+                    <field name="max_load_capacity"/>
+                    <field name="odometer"/>
+                    <field name="region"/>
+                    <field name="status" widget="badge"
+                           decoration-success="status == 'available'"
+                           decoration-warning="status == 'in_shop'"
+                           decoration-info="status == 'on_trip'"
+                           decoration-danger="status == 'retired'"/>
+                    <!-- TODO (Person A): Add total_operational_cost column -->
+                </list>
+            </field>
+        </record>
+
+        <!-- ── Form View ─────────────────────────────────────────────────────── -->
+        <record id="view_transit_vehicle_form" model="ir.ui.view">
+            <field name="name">transit.vehicle.form</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <form string="Vehicle">
+                    <!-- TODO (Person A): Add status bar and smart buttons here -->
+                    <header>
+                        <field name="status" widget="statusbar"
+                               statusbar_visible="available,on_trip,in_shop,retired"/>
+                    </header>
+                    <sheet>
+                        <!-- TODO (Person A): Add smart buttons for trips & maintenance counts -->
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_trips" icon="fa-truck">
+                                <field name="trip_count" string="Trips" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_maintenance" icon="fa-wrench">
+                                <field name="maintenance_count" string="Maintenance" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="registration_number" placeholder="REG-001"/>
+                            </h1>
+                            <h2>
+                                <field name="name" placeholder="Vehicle Name / Model"/>
+                            </h2>
+                        </div>
+                        <group>
+                            <group string="Identity">
+                                <field name="vehicle_type"/>
+                                <field name="region"/>
+                            </group>
+                            <group string="Capacity">
+                                <field name="max_load_capacity"/>
+                                <field name="odometer"/>
+                                <field name="acquisition_cost"/>
+                            </group>
+                        </group>
+                        <!-- TODO (Person A): Add Financials tab with computed cost fields -->
+                        <notebook>
+                            <page string="Financial Summary">
+                                <group>
+                                    <field name="total_fuel_cost" readonly="1"/>
+                                    <field name="total_maintenance_cost" readonly="1"/>
+                                    <field name="total_operational_cost" readonly="1"/>
+                                    <field name="vehicle_roi" readonly="1"/>
+                                </group>
+                            </page>
+                            <page string="Fuel Logs">
+                                <field name="fuel_log_ids">
+                                    <list>
+                                        <field name="date"/>
+                                        <field name="liters"/>
+                                        <field name="cost"/>
+                                        <field name="odometer_reading"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Expenses">
+                                <field name="expense_ids">
+                                    <list>
+                                        <field name="date"/>
+                                        <field name="expense_type"/>
+                                        <field name="amount"/>
+                                        <field name="description"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ── Search View ───────────────────────────────────────────────────── -->
+        <record id="view_transit_vehicle_search" model="ir.ui.view">
+            <field name="name">transit.vehicle.search</field>
+            <field name="model">transit.vehicle</field>
+            <field name="arch" type="xml">
+                <search string="Search Vehicles">
+                    <field name="registration_number"/>
+                    <field name="name"/>
+                    <field name="region"/>
+                    <separator/>
+                    <filter string="Available" name="available" domain="[('status','=','available')]"/>
+                    <filter string="On Trip" name="on_trip" domain="[('status','=','on_trip')]"/>
+                    <filter string="In Shop" name="in_shop" domain="[('status','=','in_shop')]"/>
+                    <filter string="Retired" name="retired" domain="[('status','=','retired')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Type" name="group_type" context="{'group_by':'vehicle_type'}"/>
+                        <filter string="Status" name="group_status" context="{'group_by':'status'}"/>
+                        <filter string="Region" name="group_region" context="{'group_by':'region'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ── Window Action ─────────────────────────────────────────────────── -->
+        <record id="action_transit_vehicle" model="ir.actions.act_window">
+            <field name="name">Vehicles</field>
+            <field name="res_model">transit.vehicle</field>
+            <field name="view_mode">list,form</field>
+            <field name="search_view_id" ref="view_transit_vehicle_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Register your first vehicle!
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

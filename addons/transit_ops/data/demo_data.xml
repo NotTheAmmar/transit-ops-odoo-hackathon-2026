@@ -1,0 +1,59 @@
+<!-- Owner: Person C -->
+<odoo>
+    <data noupdate="1">
+        <!-- ── Demo Vehicles ────────────────────────────────────────────────── -->
+        <record id="demo_vehicle_1" model="transit.vehicle">
+            <field name="registration_number">VAN-05</field>
+            <field name="name">Toyota Hiace Van</field>
+            <field name="vehicle_type">van</field>
+            <field name="max_load_capacity">500.0</field>
+            <field name="odometer">12500.0</field>
+            <field name="acquisition_cost">25000.0</field>
+            <field name="region">City Center</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="demo_vehicle_2" model="transit.vehicle">
+            <field name="registration_number">TRK-12</field>
+            <field name="name">Volvo FH Heavy Truck</field>
+            <field name="vehicle_type">truck</field>
+            <field name="max_load_capacity">5000.0</field>
+            <field name="odometer">89000.0</field>
+            <field name="acquisition_cost">95000.0</field>
+            <field name="region">North</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- ── Demo Drivers ─────────────────────────────────────────────────── -->
+        <record id="demo_driver_1" model="transit.driver">
+            <field name="name">Alex Mercer</field>
+            <field name="license_number">DL-998877</field>
+            <field name="license_category">B</field>
+            <field name="license_expiry" eval="(datetime.date.today() + datetime.timedelta(days=365)).strftime('%Y-%m-%d')"/>
+            <field name="contact_number">+1-555-0199</field>
+            <field name="safety_score">95.5</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="demo_driver_2" model="transit.driver">
+            <field name="name">Sarah Connor</field>
+            <field name="license_number">DL-112233</field>
+            <field name="license_category">C</field>
+            <field name="license_expiry" eval="(datetime.date.today() + datetime.timedelta(days=730)).strftime('%Y-%m-%d')"/>
+            <field name="contact_number">+1-555-0122</field>
+            <field name="safety_score">98.0</field>
+            <field name="status">available</field>
+        </record>
+
+        <!-- Driver with expired license (test constraint) -->
+        <record id="demo_driver_expired" model="transit.driver">
+            <field name="name">Mike Miller</field>
+            <field name="license_number">DL-445566</field>
+            <field name="license_category">B</field>
+            <field name="license_expiry" eval="(datetime.date.today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')"/>
+            <field name="contact_number">+1-555-0144</field>
+            <field name="safety_score">85.0</field>
+            <field name="status">available</field>
+        </record>
+    </data>
+</odoo>

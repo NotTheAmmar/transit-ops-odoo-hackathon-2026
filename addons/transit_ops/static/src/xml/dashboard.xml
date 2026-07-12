@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Dashboard QWeb Template
+    =======================
+    Owner: Person D
+
+    Defines the visual UI layout for the OWL KPI Dashboard.
+-->
+<templates xml:space="preserve">
+    <t t-name="transit_ops.DashboardTemplate">
+        <div class="o_transit_dashboard container-fluid p-4">
+            <!-- Header section -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h2 class="h3 font-weight-bold text-dark mb-0">Operations Dashboard</h2>
+                </div>
+                <div class="col-md-6 text-right">
+                    <button class="btn btn-secondary" t-on-click="refreshDashboard">
+                        <i class="fa fa-refresh mr-1"/> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="row">
+                <!-- Card 1: Active Vehicles -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="kpi-card bg-white rounded shadow-sm p-3 border-left border-primary">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon rounded-circle bg-light-primary p-3 mr-3 text-primary">
+                                <i class="fa fa-truck fa-2x"/>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase font-weight-bold small mb-1">Active Vehicles</h6>
+                                <h3 class="font-weight-bold mb-0 text-dark">
+                                    <t t-esc="state.kpi.active_vehicles"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Vehicles in Shop -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="kpi-card bg-white rounded shadow-sm p-3 border-left border-warning">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon rounded-circle bg-light-warning p-3 mr-3 text-warning">
+                                <i class="fa fa-wrench fa-2x"/>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase font-weight-bold small mb-1">In Shop</h6>
+                                <h3 class="font-weight-bold mb-0 text-dark">
+                                    <t t-esc="state.kpi.vehicles_in_maintenance"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Drivers On Duty -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="kpi-card bg-white rounded shadow-sm p-3 border-left border-success">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon rounded-circle bg-light-success p-3 mr-3 text-success">
+                                <i class="fa fa-user-circle-o fa-2x"/>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase font-weight-bold small mb-1">Drivers On Duty</h6>
+                                <h3 class="font-weight-bold mb-0 text-dark">
+                                    <t t-esc="state.kpi.drivers_on_duty"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Fleet Utilization -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="kpi-card bg-white rounded shadow-sm p-3 border-left border-info">
+                        <div class="d-flex align-items-center">
+                            <div class="kpi-icon rounded-circle bg-light-info p-3 mr-3 text-info">
+                                <i class="fa fa-pie-chart fa-2x"/>
+                            </div>
+                            <div>
+                                <h6 class="text-muted text-uppercase font-weight-bold small mb-1">Fleet Utilization</h6>
+                                <h3 class="font-weight-bold mb-0 text-dark">
+                                    <t t-esc="state.kpi.fleet_utilization"/>%
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Additional KPIs or Placeholder for Charts -->
+                <div class="col-md-6 mb-4">
+                    <div class="bg-white rounded shadow-sm p-4 h-100">
+                        <h5 class="font-weight-bold mb-3">Efficiency Metrics</h5>
+                        <table class="table mb-0">
+                            <tbody>
+                                <tr>
+                                    <td>Average Fuel Efficiency</td>
+                                    <td class="text-right font-weight-bold text-dark">
+                                        <t t-esc="state.kpi.fuel_efficiency"/> km/L
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Total Operational Cost (Fuel + Maint.)</td>
+                                    <td class="text-right font-weight-bold text-dark">
+                                        $<t t-esc="state.kpi.total_operational_cost"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Placeholder for Chart.js -->
+                <div class="col-md-6 mb-4">
+                    <div class="bg-white rounded shadow-sm p-4 h-100 d-flex flex-column justify-content-center align-items-center text-muted">
+                        <i class="fa fa-bar-chart fa-3x mb-2 text-secondary"/>
+                        <p class="mb-0 font-weight-bold">Visual Charts (Bonus)</p>
+                        <small>Chart.js visualizations go here.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

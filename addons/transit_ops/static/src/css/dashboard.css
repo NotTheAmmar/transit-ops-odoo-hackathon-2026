@@ -1,0 +1,30 @@
+.o_transit_dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.kpi-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-width: 0 0 0 4px !important;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08)!important;
+}
+
+.bg-light-primary {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bg-light-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.bg-light-success {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.bg-light-info {
+    background-color: rgba(23, 162, 184, 0.1);
+}

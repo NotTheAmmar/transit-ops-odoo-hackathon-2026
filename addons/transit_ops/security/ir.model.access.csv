@@ -1,0 +1,25 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vehicle_fleet_manager,transit.vehicle fleet manager,model_transit_vehicle,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_vehicle_driver,transit.vehicle driver,model_transit_vehicle,transit_ops.group_transit_driver,1,0,0,0
+access_vehicle_safety_officer,transit.vehicle safety officer,model_transit_vehicle,transit_ops.group_transit_safety_officer,1,0,0,0
+access_vehicle_financial_analyst,transit.vehicle financial analyst,model_transit_vehicle,transit_ops.group_transit_financial_analyst,1,0,0,0
+access_driver_fleet_manager,transit.driver fleet manager,model_transit_driver,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_driver_safety_officer,transit.driver safety officer,model_transit_driver,transit_ops.group_transit_safety_officer,1,1,0,0
+access_driver_driver,transit.driver driver,model_transit_driver,transit_ops.group_transit_driver,1,0,0,0
+access_driver_financial_analyst,transit.driver financial analyst,model_transit_driver,transit_ops.group_transit_financial_analyst,1,0,0,0
+access_trip_fleet_manager,transit.trip fleet manager,model_transit_trip,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_trip_driver,transit.trip driver,model_transit_trip,transit_ops.group_transit_driver,1,1,1,0
+access_trip_safety_officer,transit.trip safety officer,model_transit_trip,transit_ops.group_transit_safety_officer,1,0,0,0
+access_trip_financial_analyst,transit.trip financial analyst,model_transit_trip,transit_ops.group_transit_financial_analyst,1,0,0,0
+access_maintenance_fleet_manager,transit.maintenance fleet manager,model_transit_maintenance,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_maintenance_driver,transit.maintenance driver,model_transit_maintenance,transit_ops.group_transit_driver,1,0,0,0
+access_maintenance_safety_officer,transit.maintenance safety officer,model_transit_maintenance,transit_ops.group_transit_safety_officer,1,0,0,0
+access_maintenance_financial_analyst,transit.maintenance financial analyst,model_transit_maintenance,transit_ops.group_transit_financial_analyst,1,0,0,0
+access_fuellog_fleet_manager,transit.fuel.log fleet manager,model_transit_fuel_log,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_fuellog_financial_analyst,transit.fuel.log financial analyst,model_transit_fuel_log,transit_ops.group_transit_financial_analyst,1,1,1,1
+access_fuellog_driver,transit.fuel.log driver,model_transit_fuel_log,transit_ops.group_transit_driver,1,0,0,0
+access_fuellog_safety_officer,transit.fuel.log safety officer,model_transit_fuel_log,transit_ops.group_transit_safety_officer,1,0,0,0
+access_expense_fleet_manager,transit.expense fleet manager,model_transit_expense,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_expense_financial_analyst,transit.expense financial analyst,model_transit_expense,transit_ops.group_transit_financial_analyst,1,1,1,1
+access_expense_driver,transit.expense driver,model_transit_expense,transit_ops.group_transit_driver,1,0,0,0
+access_expense_safety_officer,transit.expense safety officer,model_transit_expense,transit_ops.group_transit_safety_officer,1,0,0,0
