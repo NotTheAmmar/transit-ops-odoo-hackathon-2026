@@ -1,26 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Report Templates
-    ================
-    Owner: Person A
-
-    Defines QWeb HTML templates for generating PDF reports.
--->
 <odoo>
     <data>
-        <!-- Placeholder QWeb Template -->
-        <!--
         <template id="report_fleet_summary">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="doc">
                     <t t-call="web.external_layout">
                         <div class="page">
-                            <h2>Fleet Summary: <t t-esc="doc.name"/></h2>
+                            <h2>Fleet Summary</h2>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Registration</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Region</th>
+                                        <th>Total Op. Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><t t-esc="doc.registration_number"/></td>
+                                        <td><t t-esc="doc.name"/></td>
+                                        <td><t t-esc="doc.vehicle_type"/></td>
+                                        <td><t t-esc="doc.status"/></td>
+                                        <td><t t-esc="doc.region or 'N/A'"/></td>
+                                        <td><t t-esc="doc.total_operational_cost"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </t>
                 </t>
             </t>
         </template>
-        -->
+
+        <template id="report_vehicle_cost">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h2>Operational Cost Report: <t t-esc="doc.name"/></h2>
+                            <table class="table table-sm table-bordered">
+                                <tr><th>Registration</th><td><t t-esc="doc.registration_number"/></td></tr>
+                                <tr><th>Acquisition Cost</th><td><t t-esc="doc.acquisition_cost"/></td></tr>
+                                <tr><th>Total Fuel Cost</th><td><t t-esc="doc.total_fuel_cost"/></td></tr>
+                                <tr><th>Total Maintenance Cost</th><td><t t-esc="doc.total_maintenance_cost"/></td></tr>
+                                <tr><th>Total Operational Cost</th><td><t t-esc="doc.total_operational_cost"/></td></tr>
+                                <tr><th>Vehicle ROI</th><td><t t-esc="doc.vehicle_roi"/></td></tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
     </data>
 </odoo>

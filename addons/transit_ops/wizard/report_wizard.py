@@ -26,9 +26,47 @@ class TransitReportWizard(models.TransientModel):
     )
 
     def action_generate_report(self):
-        """
-        TODO (Person A): Implement report generation logic.
-        - For 'csv': Generate CSV file as attachment and trigger download.
-        - For 'pdf': Call the act_window action to print a QWeb PDF.
-        """
-        return True
+        if self.export_type == 'csv':
+            return self._action_export_csv()
+        else:
+            return self._action_export_pdf()
+
+    def _action_export_csv(self):
+        import base64
+        import csv
+        import io
+
+        vehicles = self.env['transit.vehicle'].search([])
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow([
+            'Registration', 'Name', 'Type', 'Status',
+            'Region', 'Fuel Cost', 'Maintenance Cost', 'Total Op. Cost'
+        ])
+        for v in vehicles:
+            writer.writerow([
+                v.registration_number,
+                v.name,
+                v.vehicle_type,
+                v.status,
+                v.region or '',
+                v.total_fuel_cost,
+                v.total_maintenance_cost,
+                v.total_operational_cost,
+            ])
+        csv_data = base64.b64encode(output.getvalue().encode())
+        attachment = self.env['ir.attachment'].create({
+            'name': 'fleet_summary.csv',
+            'type': 'binary',
+            'datas': csv_data,
+            'mimetype': 'text/csv',
+        })
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%d?download=true' % attachment.id,
+            'target': 'self',
+        }
+
+    def _action_export_pdf(self):
+        vehicles = self.env['transit.vehicle'].search([])
+        return self.env.ref('transit_ops.action_report_fleet_summary').report_action(vehicles)
