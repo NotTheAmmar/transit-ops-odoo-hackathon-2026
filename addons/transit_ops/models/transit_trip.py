@@ -280,6 +280,11 @@ class TransitTrip(models.Model):
             trip.driver_id.status = 'on_trip'
             trip.date_dispatched = fields.Datetime.now()
             trip.state = 'dispatched'
+            
+            msg = f"Trip Dispatched<br/>Vehicle: {trip.vehicle_id.name}<br/>Driver: {trip.driver_id.name}<br/>Destination: {trip.destination}"
+            trip.message_post(body=msg)
+            trip.vehicle_id.message_post(body=f"Dispatched on Trip: {trip.name}")
+            trip.driver_id.message_post(body=f"Dispatched on Trip: {trip.name}")
 
     def action_complete(self):
         """
@@ -323,6 +328,11 @@ class TransitTrip(models.Model):
             # Record completion timestamp
             trip.date_completed = fields.Datetime.now()
             trip.state = 'completed'
+            
+            msg = f"Trip Completed<br/>Distance: {trip.actual_distance} km<br/>Fuel: {trip.fuel_consumed} L"
+            trip.message_post(body=msg)
+            trip.vehicle_id.message_post(body=f"Completed Trip: {trip.name}. Vehicle is now Available.")
+            trip.driver_id.message_post(body=f"Completed Trip: {trip.name}. Driver is now Available.")
 
     def action_cancel(self):
         """
@@ -336,7 +346,10 @@ class TransitTrip(models.Model):
                 # Restore statuses only if we were dispatched
                 trip.vehicle_id.status = 'available'
                 trip.driver_id.status = 'available'
+                trip.vehicle_id.message_post(body=f"Trip Cancelled: {trip.name}. Vehicle is now Available.")
+                trip.driver_id.message_post(body=f"Trip Cancelled: {trip.name}. Driver is now Available.")
             trip.state = 'cancelled'
+            trip.message_post(body="Trip Cancelled")
 
     def action_reset_draft(self):
         """
