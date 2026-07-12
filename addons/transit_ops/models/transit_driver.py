@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import date
+from datetime import date, timedelta
 
 
 class TransitDriver(models.Model):
@@ -109,3 +109,21 @@ class TransitDriver(models.Model):
             'domain': [('driver_id', '=', self.id)],
             'context': {'default_driver_id': self.id},
         }
+
+    # ── Scheduled Actions (Cron) ──────────────────────────────────────────────
+    @api.model
+    def _cron_check_license_expiry(self):
+        """
+        Runs daily to find drivers whose licenses expire within 5 days.
+        """
+        warning_date = date.today() + timedelta(days=5)
+        drivers_expiring = self.search([
+            ('license_expiry', '<=', warning_date),
+            ('status', '!=', 'suspended')
+        ])
+        for driver in drivers_expiring:
+            driver.activity_schedule(
+                'mail.mail_activity_data_todo',
+                summary=f"License Expiring Soon for {driver.name}",
+                note=f"License {driver.license_number} expires on {driver.license_expiry}.",
+            )

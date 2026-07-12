@@ -1,27 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Vehicle Views
-    =============
-    Owner: Person A
-
-    TODO:
-    1. Build the Form view with:
-       - Status bar widget for 'status' field
-       - Smart buttons for trips count and maintenance count
-       - Field groups: Identity | Capacity & Odometer | Financials
-       - Chatter (message thread) at the bottom
-
-    2. Build the List (tree) view with:
-       - Key columns: registration_number, name, vehicle_type, status, max_load_capacity, region
-       - decoration-danger for 'retired'
-       - decoration-warning for 'in_shop'
-       - decoration-success for 'available'
-
-    3. Build the Search view with:
-       - Search by registration number, name
-       - Filters: Available, On Trip, In Shop, Retired
-       - Group By: vehicle_type, region, status
--->
 <odoo>
     <data>
 
@@ -41,12 +18,13 @@
                     <field name="max_load_capacity"/>
                     <field name="odometer"/>
                     <field name="region"/>
+                    <field name="health_score" widget="progressbar"/>
                     <field name="status" widget="badge"
                            decoration-success="status == 'available'"
                            decoration-warning="status == 'in_shop'"
                            decoration-info="status == 'on_trip'"
                            decoration-danger="status == 'retired'"/>
-                    <!-- TODO (Person A): Add total_operational_cost column -->
+                    <field name="total_operational_cost"/>
                 </list>
             </field>
         </record>
@@ -57,13 +35,15 @@
             <field name="model">transit.vehicle</field>
             <field name="arch" type="xml">
                 <form string="Vehicle">
-                    <!-- TODO (Person A): Add status bar and smart buttons here -->
                     <header>
                         <field name="status" widget="statusbar"
                                statusbar_visible="available,on_trip,in_shop,retired"/>
                     </header>
                     <sheet>
-                        <!-- TODO (Person A): Add smart buttons for trips & maintenance counts -->
+                        <widget name="web_ribbon" title="Healthy" bg_color="text-bg-success" invisible="health_badge != 'healthy'"/>
+                        <widget name="web_ribbon" title="Service Due" bg_color="text-bg-warning" invisible="health_badge != 'warning'"/>
+                        <widget name="web_ribbon" title="Critical" bg_color="text-bg-danger" invisible="health_badge != 'critical'"/>
+
                         <div class="oe_button_box" name="button_box">
                             <button class="oe_stat_button" type="object"
                                     name="action_view_trips" icon="fa-truck">
@@ -72,6 +52,14 @@
                             <button class="oe_stat_button" type="object"
                                     name="action_view_maintenance" icon="fa-wrench">
                                 <field name="maintenance_count" string="Maintenance" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_fuel_logs" icon="fa-tint">
+                                <field name="fuel_log_count" string="Fuel Logs" widget="statinfo"/>
+                            </button>
+                            <button class="oe_stat_button" type="object"
+                                    name="action_view_expenses" icon="fa-money">
+                                <field name="expense_count" string="Expenses" widget="statinfo"/>
                             </button>
                         </div>
                         <div class="oe_title">
@@ -82,50 +70,58 @@
                                 <field name="name" placeholder="Vehicle Name / Model"/>
                             </h2>
                         </div>
+
+                        <!-- KPIs requested by Odoo Architect -->
+                        <group string="Fleet Intelligence &amp; Metrics">
+                            <group>
+                                <field name="health_score" widget="progressbar"/>
+                                <field name="health_badge" invisible="1"/>
+                                <field name="fleet_recommendation" readonly="1" decoration-info="1"/>
+                            </group>
+                            <group>
+                                <field name="total_operational_cost" widget="monetary" string="Total Operational Cost"/>
+                                <field name="total_fuel_cost" widget="monetary" string="Total Fuel Cost"/>
+                                <field name="last_maintenance_date" string="Last Service Date"/>
+                                <field name="next_recommended_maintenance" string="Next Service Date"/>
+                            </group>
+                        </group>
+
                         <group>
                             <group string="Identity">
                                 <field name="vehicle_type"/>
                                 <field name="region"/>
-                            </group>
-                            <group string="Capacity">
-                                <field name="max_load_capacity"/>
-                                <field name="odometer"/>
                                 <field name="acquisition_cost"/>
                             </group>
+                            <group string="Capacity &amp; Analytics">
+                                <field name="max_load_capacity"/>
+                                <field name="odometer"/>
+                                <field name="average_fuel_efficiency"/>
+                            </group>
                         </group>
-                        <!-- TODO (Person A): Add Financials tab with computed cost fields -->
                         <notebook>
+                            <page string="Maintenance Schedule">
+                                <group>
+                                    <field name="last_maintenance_odometer"/>
+                                    <field name="service_interval_km"/>
+                                    <field name="maintenance_due"/>
+                                </group>
+                            </page>
                             <page string="Financial Summary">
                                 <group>
                                     <field name="total_fuel_cost" readonly="1"/>
                                     <field name="total_maintenance_cost" readonly="1"/>
+                                    <field name="total_other_expenses" readonly="1"/>
                                     <field name="total_operational_cost" readonly="1"/>
                                     <field name="vehicle_roi" readonly="1"/>
                                 </group>
                             </page>
-                            <page string="Fuel Logs">
-                                <field name="fuel_log_ids">
-                                    <list>
-                                        <field name="date"/>
-                                        <field name="liters"/>
-                                        <field name="cost"/>
-                                        <field name="odometer_reading"/>
-                                    </list>
-                                </field>
-                            </page>
-                            <page string="Expenses">
-                                <field name="expense_ids">
-                                    <list>
-                                        <field name="date"/>
-                                        <field name="expense_type"/>
-                                        <field name="amount"/>
-                                        <field name="description"/>
-                                    </list>
-                                </field>
-                            </page>
                         </notebook>
                     </sheet>
-                    <chatter/>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

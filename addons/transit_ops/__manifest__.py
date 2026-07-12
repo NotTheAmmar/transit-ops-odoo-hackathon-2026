@@ -18,6 +18,7 @@
 
         # Data / Sequences
         'data/sequences.xml',
+        'data/cron_jobs.xml',
 
         # Views
         'views/vehicle_views.xml',

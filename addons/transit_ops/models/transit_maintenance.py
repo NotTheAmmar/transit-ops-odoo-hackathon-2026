@@ -71,6 +71,9 @@ class TransitMaintenance(models.Model):
                 raise UserError('Cannot perform maintenance on a retired vehicle.')
             record.vehicle_id.status = 'in_shop'
             record.state = 'open'
+            
+            record.message_post(body=f"Maintenance Started: {record.name}")
+            record.vehicle_id.message_post(body=f"Vehicle moved to In Shop for Maintenance: {record.name}")
 
     def action_close(self):
         """
@@ -90,5 +93,9 @@ class TransitMaintenance(models.Model):
                 ])
                 if open_logs_count == 0:
                     record.vehicle_id.status = 'available'
+                    record.vehicle_id.message_post(body=f"Maintenance Completed: {record.name}. Vehicle is now Available.")
+                else:
+                    record.vehicle_id.message_post(body=f"Maintenance Completed: {record.name}. Vehicle remains In Shop due to other open records.")
             record.date_end = fields.Date.today()
             record.state = 'done'
+            record.message_post(body=f"Maintenance Completed: {record.name}")
