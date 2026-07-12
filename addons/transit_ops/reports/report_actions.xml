@@ -9,7 +9,6 @@
 <odoo>
     <data>
         <!-- Placeholder action for printing PDF -->
-        <!--
         <record id="action_report_fleet_summary" model="ir.actions.report">
             <field name="name">Fleet Summary</field>
             <field name="model">transit.vehicle</field>
@@ -19,6 +18,5 @@
             <field name="binding_model_id" ref="model_transit_vehicle"/>
             <field name="binding_type">report</field>
         </record>
-        -->
     </data>
 </odoo>

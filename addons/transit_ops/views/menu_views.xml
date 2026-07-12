@@ -102,12 +102,7 @@
                   sequence="50"
                   groups="transit_ops.group_transit_fleet_manager,transit_ops.group_transit_financial_analyst"/>
 
-        <!-- TODO (Person A): Add report action here when reports are ready -->
-        <!-- <menuitem id="menu_transit_analytics"
-                  name="Fleet Analytics"
-                  parent="menu_transit_reports"
-                  action="action_transit_fleet_report"
-                  sequence="10"/> -->
+
 
     </data>
 </odoo>
