@@ -23,3 +23,5 @@ access_expense_fleet_manager,transit.expense fleet manager,model_transit_expense
 access_expense_financial_analyst,transit.expense financial analyst,model_transit_expense,transit_ops.group_transit_financial_analyst,1,1,1,1
 access_expense_driver,transit.expense driver,model_transit_expense,transit_ops.group_transit_driver,1,0,0,0
 access_expense_safety_officer,transit.expense safety officer,model_transit_expense,transit_ops.group_transit_safety_officer,1,0,0,0
+access_report_wizard_fleet_manager,transit.report.wizard fleet manager,model_transit_report_wizard,transit_ops.group_transit_fleet_manager,1,1,1,1
+access_report_wizard_financial_analyst,transit.report.wizard financial analyst,model_transit_report_wizard,transit_ops.group_transit_financial_analyst,1,1,1,1

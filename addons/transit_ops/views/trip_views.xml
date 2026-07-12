@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Trip Views
-    ==========
-    Owner: Person B
-
-    TODO:
-    1. Form view:
-       - Domain on vehicle_id: [('status','=','available')] to only show Available vehicles
-       - Domain on driver_id: [('status','=','available'),('is_license_expired','=',False)]
-       - Completion fields (actual_distance, fuel_consumed, final_odometer) only editable
-         when state == 'dispatched' — use invisible="state != 'dispatched'"
-       - Action buttons: Dispatch (state=draft), Complete (state=dispatched),
-         Cancel (state in draft/dispatched)
-
-    2. Kanban view: Group by state for visual dispatch board
-
-    3. List view: Color-code by state
--->
 <odoo>
     <data>
 
@@ -30,17 +12,18 @@
                       decoration-info="state == 'dispatched'"
                       decoration-muted="state == 'cancelled'">
                     <field name="name"/>
+                    <field name="date_planned"/>
                     <field name="source"/>
                     <field name="destination"/>
                     <field name="vehicle_id"/>
                     <field name="driver_id"/>
-                    <field name="cargo_weight"/>
-                    <field name="planned_distance"/>
-                    <field name="state" widget="badge"
-                           decoration-secondary="state == 'draft'"
-                           decoration-info="state == 'dispatched'"
-                           decoration-success="state == 'completed'"
-                           decoration-danger="state == 'cancelled'"/>
+                    <field name="cargo_weight" sum="Total Cargo (kg)"/>
+                    <field name="planned_distance" optional="show"/>
+                    <field name="actual_distance" optional="hide"/>
+                    <field name="fuel_efficiency" optional="hide"/>
+                    <field name="trip_revenue" optional="hide" sum="Total Revenue"/>
+                    <field name="trip_cost" optional="hide" sum="Total Cost"/>
+                    <field name="state" widget="badge"/>
                 </list>
             </field>
         </record>
@@ -52,7 +35,6 @@
             <field name="arch" type="xml">
                 <form string="Trip">
                     <header>
-                        <!-- TODO (Person B): Add domain-restricted buttons -->
                         <button name="action_dispatch" string="Dispatch" type="object"
                                 class="btn-primary"
                                 invisible="state != 'draft'"/>
@@ -62,6 +44,9 @@
                         <button name="action_cancel" string="Cancel" type="object"
                                 class="btn-danger"
                                 invisible="state not in ('draft', 'dispatched')"/>
+                        <button name="action_reset_draft" string="Reset to Draft" type="object"
+                                class="btn-secondary"
+                                invisible="state != 'cancelled'"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="draft,dispatched,completed"/>
                     </header>
@@ -70,35 +55,60 @@
                             <h1><field name="name" readonly="1"/></h1>
                         </div>
                         <group>
+                            <!-- Route & Schedule -->
                             <group string="Route">
-                                <field name="source"/>
-                                <field name="destination"/>
-                                <field name="planned_distance"/>
+                                <field name="source"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                                <field name="destination"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                                <field name="planned_distance"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
                             </group>
-                            <group string="Assignment">
-                                <!-- TODO (Person B): Add domains to these fields -->
-                                <field name="vehicle_id"
-                                       domain="[('status','=','available')]"
-                                       context="{'show_address': 0}"/>
-                                <field name="driver_id"
-                                       domain="[('status','=','available'),('is_license_expired','=',False)]"/>
-                                <field name="cargo_weight"/>
+                            <group string="Schedule">
+                                <field name="date_planned"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                                <field name="date_dispatched" readonly="1"
+                                       invisible="not date_dispatched"/>
+                                <field name="date_completed" readonly="1"
+                                       invisible="not date_completed"/>
                             </group>
                         </group>
-                        <!-- Completion section — only relevant when dispatched -->
-                        <group string="Completion Details" invisible="state not in ('dispatched','completed')">
+                        <group>
+                            <!-- Assignment — domain-restricted to only Available vehicles/drivers -->
+                            <group string="Assignment">
+                                <field name="vehicle_id"
+                                       domain="[('status','=','available')]"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                                <field name="driver_id"
+                                       domain="[('status','=','available'),('is_license_expired','=',False)]"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                                <field name="cargo_weight"
+                                       readonly="state in ('dispatched', 'completed', 'cancelled')"/>
+                            </group>
+                            <!-- Financial -->
+                            <group string="Financial">
+                                <field name="trip_revenue"/>
+                                <field name="trip_cost" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- Completion section — only visible once dispatched -->
+                        <group string="Completion Details"
+                               invisible="state not in ('dispatched', 'completed')">
                             <field name="actual_distance" readonly="state == 'completed'"/>
                             <field name="fuel_consumed" readonly="state == 'completed'"/>
                             <field name="final_odometer" readonly="state == 'completed'"/>
                             <field name="fuel_efficiency" readonly="1"/>
                         </group>
+
                         <notebook>
                             <page string="Fuel Logs">
                                 <field name="fuel_log_ids">
                                     <list>
                                         <field name="date"/>
                                         <field name="liters"/>
-                                        <field name="cost"/>
+                                        <field name="cost" sum="Total Fuel Cost"/>
+                                        <field name="odometer_reading"/>
                                     </list>
                                 </field>
                             </page>
@@ -107,7 +117,7 @@
                                     <list>
                                         <field name="date"/>
                                         <field name="expense_type"/>
-                                        <field name="amount"/>
+                                        <field name="amount" sum="Total Expenses"/>
                                         <field name="description"/>
                                     </list>
                                 </field>
@@ -132,11 +142,16 @@
                     <field name="driver_id"/>
                     <field name="state"/>
                     <field name="cargo_weight"/>
+                    <field name="date_planned"/>
+                    <field name="fuel_efficiency"/>
                     <templates>
                         <t t-name="card">
                             <div class="oe_kanban_card">
-                                <strong><field name="name"/></strong>
-                                <div>
+                                <div class="d-flex justify-content-between">
+                                    <strong><field name="name"/></strong>
+                                    <field name="state" widget="badge"/>
+                                </div>
+                                <div class="mt-1">
                                     📍 <field name="source"/> → <field name="destination"/>
                                 </div>
                                 <div>
@@ -147,6 +162,12 @@
                                 </div>
                                 <div>
                                     📦 <field name="cargo_weight"/> kg
+                                </div>
+                                <div class="text-muted small" invisible="not date_planned">
+                                    🗓️ <field name="date_planned" widget="date"/>
+                                </div>
+                                <div invisible="not fuel_efficiency">
+                                    ⛽ <field name="fuel_efficiency"/> km/L
                                 </div>
                             </div>
                         </t>
@@ -167,15 +188,26 @@
                     <field name="vehicle_id"/>
                     <field name="driver_id"/>
                     <separator/>
+                    <!-- State filters -->
                     <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
                     <filter string="Dispatched" name="dispatched" domain="[('state','=','dispatched')]"/>
                     <filter string="Completed" name="completed" domain="[('state','=','completed')]"/>
                     <filter string="Cancelled" name="cancelled" domain="[('state','=','cancelled')]"/>
                     <separator/>
+                    <!-- Date filters -->
+                    <filter string="Today" name="today"
+                            domain="[('date_planned','&gt;=',datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')),
+                                     ('date_planned','&lt;=',datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                    <filter string="This Week" name="this_week"
+                            domain="[('date_planned','&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month"
+                            domain="[('date_planned','&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
                     <group expand="0" string="Group By">
                         <filter string="State" name="group_state" context="{'group_by':'state'}"/>
                         <filter string="Vehicle" name="group_vehicle" context="{'group_by':'vehicle_id'}"/>
                         <filter string="Driver" name="group_driver" context="{'group_by':'driver_id'}"/>
+                        <filter string="Planned Date" name="group_date" context="{'group_by':'date_planned:month'}"/>
                     </group>
                 </search>
             </field>
@@ -187,9 +219,14 @@
             <field name="res_model">transit.trip</field>
             <field name="view_mode">list,kanban,form</field>
             <field name="search_view_id" ref="view_transit_trip_search"/>
+            <field name="context">{'search_default_dispatched': 1}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create your first trip!
+                </p>
+                <p>
+                    Trips track the full journey lifecycle from draft to completion,
+                    enforcing vehicle capacity, driver availability, and status rules.
                 </p>
             </field>
         </record>
