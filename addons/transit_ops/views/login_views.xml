@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Override the default Odoo login page with TransitOps branding -->
+    <template id="transit_login" inherit_id="web.login" name="TransitOps Login">
+
+        <!-- Insert our branding right before the login form -->
+        <xpath expr="//form" position="before">
+            <div class="transit-login-branding text-center mb-4">
+                <div class="transit-login-logo-wrap">
+                    <i class="fa fa-bus transit-login-icon"/>
+                </div>
+                <h1 class="transit-login-title">TransitOps</h1>
+                <p class="transit-login-subtitle">Smart Transport Operations Platform</p>
+            </div>
+        </xpath>
+
+        <!-- Customize the login button -->
+        <xpath expr="//button[@type='submit']" position="attributes">
+            <attribute name="class">btn btn-lg transit-login-btn w-100 mt-3</attribute>
+        </xpath>
+
+    </template>
+
+</odoo>
