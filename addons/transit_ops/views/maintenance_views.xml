@@ -15,27 +15,20 @@
                     <field name="state"/>
                     <field name="cost"/>
                     <templates>
-                        <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_global_click">
-                                <div class="o_kanban_record_top">
-                                    <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title"><field name="name"/></strong>
-                                    </div>
-                                    <div class="o_dropdown_kanban dropdown">
-                                        <field name="state" widget="label_selection" options="{'classes': {'draft': 'default', 'open': 'warning', 'done': 'success'}}"/>
-                                    </div>
-                                </div>
-                                <div class="o_kanban_record_body">
-                                    <field name="vehicle_id"/>
-                                </div>
-                                <div class="o_kanban_record_bottom">
-                                    <div class="oe_kanban_bottom_left">
-                                        <field name="maintenance_type"/>
-                                    </div>
-                                    <div class="oe_kanban_bottom_right">
-                                        <strong><field name="cost" widget="monetary"/></strong>
-                                    </div>
-                                </div>
+                        <t t-name="card">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong><field name="name"/></strong>
+                                <field name="state" widget="badge"
+                                       decoration-muted="state == 'draft'"
+                                       decoration-warning="state == 'open'"
+                                       decoration-success="state == 'done'"/>
+                            </div>
+                            <div class="mb-1">
+                                <field name="vehicle_id"/>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><field name="maintenance_type"/></span>
+                                <strong><field name="cost" widget="monetary"/></strong>
                             </div>
                         </t>
                     </templates>

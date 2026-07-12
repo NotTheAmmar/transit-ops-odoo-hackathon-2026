@@ -35,7 +35,7 @@
         'reports/report_templates.xml',
 
         # Wizards
-        'wizard/report_wizard_views.xml',
+        'views/wizard/report_wizard_views.xml',
     ],
     'demo': [
         'data/demo_data.xml',
