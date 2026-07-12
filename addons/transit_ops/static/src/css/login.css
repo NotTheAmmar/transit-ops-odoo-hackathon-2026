@@ -1,0 +1,376 @@
+/* =========================================================
+   TransitOps — Login Page Styles
+   =========================================================
+   Premium dark-themed login with glassmorphism effects,
+   subtle animations, and TransitOps branding.
+   ========================================================= */
+
+/* ---------- Font & Root Variables ---------- */
+:root {
+    --transit-primary: #0ea5e9;
+    --transit-primary-dark: #0284c7;
+    --transit-accent: #38bdf8;
+    --transit-bg-start: #0f172a;
+    --transit-bg-end: #1e293b;
+    --transit-card-bg: rgba(255, 255, 255, 0.06);
+    --transit-card-border: rgba(255, 255, 255, 0.1);
+    --transit-text: #e2e8f0;
+    --transit-text-muted: #94a3b8;
+    --transit-glow: rgba(14, 165, 233, 0.35);
+}
+
+/* ---------- Full-Page Background ---------- */
+body.oe_login_body,
+.oe_login_body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    background: linear-gradient(135deg, var(--transit-bg-start) 0%, var(--transit-bg-end) 50%, #0c4a6e 100%) !important;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Animated gradient orbs in background */
+body.oe_login_body::before,
+body.oe_login_body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    z-index: 0;
+    pointer-events: none;
+}
+
+body.oe_login_body::before {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--transit-primary) 0%, transparent 70%);
+    top: -100px;
+    right: -100px;
+    animation: float-orb 8s ease-in-out infinite alternate;
+}
+
+body.oe_login_body::after {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+    bottom: -80px;
+    left: -80px;
+    animation: float-orb 10s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes float-orb {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, -30px) scale(1.1); }
+}
+
+/* ---------- Login Container ---------- */
+.oe_login_body .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ---------- Login Card (Glassmorphism) ---------- */
+.oe_login_body .card,
+.oe_login_body .oe_login_form,
+.oe_login_body .card.bg-light {
+    background: var(--transit-card-bg) !important;
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid var(--transit-card-border) !important;
+    border-radius: 20px !important;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 60px var(--transit-glow);
+    padding: 2.5rem 2rem !important;
+    max-width: 420px;
+    margin: 0 auto;
+    animation: card-appear 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-appear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ---------- Branding Section ---------- */
+.transit-login-branding {
+    animation: brand-appear 0.5s ease-out both;
+}
+
+@keyframes brand-appear {
+    0%   { opacity: 0; transform: translateY(-15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.transit-login-logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--transit-primary) 0%, #7c3aed 100%);
+    margin-bottom: 1.25rem;
+    box-shadow:
+        0 6px 24px rgba(14, 165, 233, 0.4),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    animation: logo-pulse 3s ease-in-out infinite;
+}
+
+@keyframes logo-pulse {
+    0%, 100% { box-shadow: 0 6px 24px rgba(14, 165, 233, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
+    50%      { box-shadow: 0 6px 36px rgba(14, 165, 233, 0.6), inset 0 1px 0 rgba(255,255,255,0.2); }
+}
+
+.transit-login-icon {
+    font-size: 2.2rem;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.transit-login-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ffffff 0%, var(--transit-accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.25rem;
+}
+
+.transit-login-subtitle {
+    color: var(--transit-text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+/* ---------- Form Labels & Inputs ---------- */
+.oe_login_body .form-control,
+.oe_login_body .o_login_field,
+.oe_login_body input[type="text"],
+.oe_login_body input[type="password"],
+.oe_login_body input[type="email"] {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    color: #f1f5f9 !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem !important;
+    font-family: 'Inter', sans-serif !important;
+    transition: all 0.25s ease;
+}
+
+.oe_login_body .form-control:focus,
+.oe_login_body input:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--transit-primary) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2) !important;
+    outline: none;
+}
+
+.oe_login_body .form-control::placeholder {
+    color: var(--transit-text-muted) !important;
+    opacity: 0.7;
+}
+
+.oe_login_body label,
+.oe_login_body .form-label {
+    color: var(--transit-text) !important;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+/* ---------- Login Button ---------- */
+.transit-login-btn,
+.oe_login_body .btn-primary {
+    background: linear-gradient(135deg, var(--transit-primary) 0%, var(--transit-primary-dark) 100%) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    padding: 0.85rem 1.5rem !important;
+    letter-spacing: 0.3px;
+    text-transform: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.transit-login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s ease;
+}
+
+.transit-login-btn:hover::before {
+    left: 100%;
+}
+
+.transit-login-btn:hover,
+.oe_login_body .btn-primary:hover {
+    background: linear-gradient(135deg, var(--transit-accent) 0%, var(--transit-primary) 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5) !important;
+}
+
+.transit-login-btn:active,
+.oe_login_body .btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.4) !important;
+}
+
+/* ---------- Links & Secondary Text ---------- */
+.oe_login_body a,
+.oe_login_body .oe_login_form a {
+    color: var(--transit-accent) !important;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.oe_login_body a:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
+}
+
+.oe_login_body .text-muted,
+.oe_login_body small,
+.oe_login_body .o_login_auth {
+    color: var(--transit-text-muted) !important;
+}
+
+/* ---------- Alert / Error Messages ---------- */
+.oe_login_body .alert-danger {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #fca5a5 !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px);
+}
+
+.oe_login_body .alert-success {
+    background: rgba(34, 197, 94, 0.15) !important;
+    border: 1px solid rgba(34, 197, 94, 0.3) !important;
+    color: #86efac !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(10px);
+}
+
+/* ---------- Hide Odoo Footer / Powered-by / Logo ---------- */
+.oe_login_body .o_login_footer,
+.oe_login_body footer,
+.oe_login_body .text-center.small {
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.oe_login_body img[src*="logo"],
+.oe_login_body .text-center img {
+    display: none !important;
+}
+
+.oe_login_body .o_login_footer:hover,
+.oe_login_body footer:hover {
+    opacity: 0.6;
+}
+
+/* ---------- Checkbox / Remember Me ---------- */
+.oe_login_body .form-check-input {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px !important;
+}
+
+.oe_login_body .form-check-input:checked {
+    background-color: var(--transit-primary) !important;
+    border-color: var(--transit-primary) !important;
+}
+
+.oe_login_body .form-check-label {
+    color: var(--transit-text-muted) !important;
+    font-size: 0.85rem;
+    text-transform: none !important;
+    font-weight: 400 !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 576px) {
+    .oe_login_body .card,
+    .oe_login_body .oe_login_form {
+        margin: 1rem !important;
+        padding: 2rem 1.25rem !important;
+        border-radius: 16px !important;
+    }
+
+    .transit-login-title {
+        font-size: 1.6rem;
+    }
+
+    .transit-login-logo-wrap {
+        width: 64px;
+        height: 64px;
+    }
+
+    .transit-login-icon {
+        font-size: 1.8rem;
+    }
+}
+
+/* ---------- Floating particles (decorative) ---------- */
+.oe_login_body .container::before {
+    content: '';
+    position: fixed;
+    top: 20%;
+    left: 10%;
+    width: 6px;
+    height: 6px;
+    background: var(--transit-accent);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: particle-float 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.oe_login_body .container::after {
+    content: '';
+    position: fixed;
+    top: 60%;
+    right: 15%;
+    width: 4px;
+    height: 4px;
+    background: #a78bfa;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: particle-float 8s ease-in-out infinite reverse;
+    pointer-events: none;
+}
+
+@keyframes particle-float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25%      { transform: translateY(-20px) translateX(10px); }
+    50%      { transform: translateY(-10px) translateX(-15px); }
+    75%      { transform: translateY(-30px) translateX(5px); }
+}

@@ -29,6 +29,7 @@
         'views/expense_views.xml',
         'views/dashboard_views.xml',
         'views/menu_views.xml',
+        'views/login_views.xml',
 
         # Reports
         'reports/report_actions.xml',
@@ -41,6 +42,9 @@
         'data/demo_data.xml',
     ],
     'assets': {
+        'web.assets_frontend': [
+            'transit_ops/static/src/css/login.css',
+        ],
         'web.assets_backend': [
             'transit_ops/static/src/css/dashboard.css',
             'transit_ops/static/src/js/dashboard.js',
@@ -50,4 +54,5 @@
     'application': True,
     'installable': True,
     'auto_install': False,
+    'post_init_hook': '_post_init_set_home_action',
 }

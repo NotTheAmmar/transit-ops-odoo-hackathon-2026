@@ -309,5 +309,58 @@
             <field name="description">Driver meal allowance — overnight stop</field>
         </record>
 
+        <!-- ══════════════════════════════════════════════════════════════════
+             DEMO USERS — one per RBAC role for hackathon demo
+             ══════════════════════════════════════════════════════════════════ -->
+
+        <!-- Driver User — Alex Mercer (can only see own trips) -->
+        <record id="demo_user_driver" model="res.users">
+            <field name="name">Alex Mercer</field>
+            <field name="login">driver</field>
+            <field name="password">driver</field>
+            <field name="email">driver@transitops.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('transit_ops.group_transit_driver')),
+            ]"/>
+            <field name="action_id" ref="transit_ops.action_transit_dashboard"/>
+        </record>
+
+        <!-- Safety Officer User — can view all trips + edit driver safety -->
+        <record id="demo_user_safety" model="res.users">
+            <field name="name">Jordan Blake</field>
+            <field name="login">safety</field>
+            <field name="password">safety</field>
+            <field name="email">safety@transitops.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('transit_ops.group_transit_safety_officer')),
+            ]"/>
+            <field name="action_id" ref="transit_ops.action_transit_dashboard"/>
+        </record>
+
+        <!-- Financial Analyst User — can manage fuel logs + expenses -->
+        <record id="demo_user_analyst" model="res.users">
+            <field name="name">Riley Chen</field>
+            <field name="login">analyst</field>
+            <field name="password">analyst</field>
+            <field name="email">analyst@transitops.local</field>
+            <field name="groups_id" eval="[
+                (4, ref('base.group_user')),
+                (4, ref('transit_ops.group_transit_financial_analyst')),
+            ]"/>
+            <field name="action_id" ref="transit_ops.action_transit_dashboard"/>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             LINK DEMO DRIVERS → DEMO USERS
+             This enables the record rule "Drivers: Own Trips Only"
+             ══════════════════════════════════════════════════════════════════ -->
+
+        <!-- Link driver Alex Mercer to his user account -->
+        <record id="demo_driver_1" model="transit.driver">
+            <field name="user_ids" eval="[(4, ref('demo_user_driver'))]"/>
+        </record>
+
     </data>
 </odoo>
