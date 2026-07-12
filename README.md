@@ -20,8 +20,8 @@ Follow these steps to spin up the local development environment:
    ```
 3. Open your web browser and go to `http://localhost:8069`.
 
-3. Create a new database with name `transit_ops` (or let Odoo create it default). Use Master Password `admin123` if prompted.
-4. Log in (default master password is in `odoo.conf`).
+3. Create a new database with name `transit_ops` (or let Odoo create it default). Use the admin password configured in your `.env` file if prompted.
+4. Log in (default master password is in your `.env` file).
 5. Go to **Apps**, search for `transit_ops` (remove the `Apps` filter if it doesn't show up), and click **Activate/Install**.
 
 ---
