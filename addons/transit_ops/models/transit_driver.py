@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import date
+from datetime import date, timedelta
 
 
 class TransitDriver(models.Model):
@@ -47,6 +47,16 @@ class TransitDriver(models.Model):
         tracking=True,
     )
     contact_number = fields.Char(string='Contact Number')
+
+    # ── User Association ───────────────────────────────────────────────────────
+    user_ids = fields.Many2many(
+        comodel_name='res.users',
+        relation='transit_driver_user_rel',
+        column1='driver_id',
+        column2='user_id',
+        string='Related Users',
+        help='Odoo users associated with this driver.',
+    )
 
     # ── Safety & Status ────────────────────────────────────────────────────────
     safety_score = fields.Float(
@@ -109,3 +119,21 @@ class TransitDriver(models.Model):
             'domain': [('driver_id', '=', self.id)],
             'context': {'default_driver_id': self.id},
         }
+
+    # ── Scheduled Actions (Cron) ──────────────────────────────────────────────
+    @api.model
+    def _cron_check_license_expiry(self):
+        """
+        Runs daily to find drivers whose licenses expire within 5 days.
+        """
+        warning_date = date.today() + timedelta(days=5)
+        drivers_expiring = self.search([
+            ('license_expiry', '<=', warning_date),
+            ('status', '!=', 'suspended')
+        ])
+        for driver in drivers_expiring:
+            driver.activity_schedule(
+                'mail.mail_activity_data_todo',
+                summary=f"License Expiring Soon for {driver.name}",
+                note=f"License {driver.license_number} expires on {driver.license_expiry}.",
+            )

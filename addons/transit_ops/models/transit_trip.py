@@ -64,16 +64,33 @@ class TransitTrip(models.Model):
         string='Vehicle',
         required=True,
         tracking=True,
-        # RULE: Only Available vehicles appear in selection
-        # TODO (Person B): Add domain=[('status', '=', 'available')] in the view
     )
     driver_id = fields.Many2one(
         comodel_name='transit.driver',
         string='Driver',
         required=True,
         tracking=True,
-        # RULE: Only Available, non-expired drivers appear in selection
-        # TODO (Person B): Add domain in the view
+    )
+
+    # ── Dates ─────────────────────────────────────────────────────────────────
+    date_planned = fields.Datetime(
+        string='Planned Date',
+        default=fields.Datetime.now,
+        required=True,
+        tracking=True,
+        help='Scheduled departure date and time.',
+    )
+    date_dispatched = fields.Datetime(
+        string='Dispatched At',
+        readonly=True,
+        tracking=True,
+        help='Timestamp when the trip was dispatched.',
+    )
+    date_completed = fields.Datetime(
+        string='Completed At',
+        readonly=True,
+        tracking=True,
+        help='Timestamp when the trip was completed.',
     )
 
     # ── Completion Fields ─────────────────────────────────────────────────────
@@ -89,6 +106,18 @@ class TransitTrip(models.Model):
         string='Fuel Efficiency (km/L)',
         compute='_compute_fuel_efficiency',
         store=True,
+    )
+
+    # ── Financial ─────────────────────────────────────────────────────────────
+    trip_revenue = fields.Float(
+        string='Trip Revenue',
+        help='Revenue earned for this trip.',
+    )
+    trip_cost = fields.Float(
+        string='Total Trip Cost',
+        compute='_compute_trip_cost',
+        store=True,
+        help='Sum of fuel costs + expenses linked to this trip.',
     )
 
     # ── Relations ──────────────────────────────────────────────────────────────
@@ -112,18 +141,17 @@ class TransitTrip(models.Model):
             else:
                 trip.fuel_efficiency = 0.0
 
+    @api.depends('fuel_log_ids.cost', 'expense_ids.amount')
+    def _compute_trip_cost(self):
+        for trip in self:
+            fuel_total = sum(trip.fuel_log_ids.mapped('cost'))
+            expense_total = sum(trip.expense_ids.mapped('amount'))
+            trip.trip_cost = fuel_total + expense_total
+
     # ── ORM Overrides ─────────────────────────────────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
-        """
-        TODO (Person B): Auto-assign trip reference from ir.sequence.
-        Replace 'New' with the next sequence value (e.g. TRIP/0001).
-
-        Example:
-            for vals in vals_list:
-                if vals.get('name', 'New') == 'New':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('transit.trip')
-        """
+        """Auto-assign trip reference from ir.sequence (e.g. TRIP/0001)."""
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
                 vals['name'] = self.env['ir.sequence'].next_by_code('transit.trip') or 'New'
@@ -134,34 +162,36 @@ class TransitTrip(models.Model):
     def _check_cargo_weight(self):
         """
         RULE 5: Cargo Weight must not exceed the vehicle's maximum load capacity.
-        TODO (Person B): Implement this constraint.
         """
         for trip in self:
-            if trip.vehicle_id and trip.cargo_weight > trip.vehicle_id.max_load_capacity:
+            if (
+                trip.vehicle_id
+                and trip.cargo_weight > 0
+                and trip.cargo_weight > trip.vehicle_id.max_load_capacity
+            ):
                 raise ValidationError(
-                    f'Cargo weight ({trip.cargo_weight} kg) exceeds the vehicle\'s '
-                    f'maximum load capacity ({trip.vehicle_id.max_load_capacity} kg)!'
+                    f'Cargo weight ({trip.cargo_weight:.1f} kg) exceeds the vehicle\'s '
+                    f'maximum load capacity ({trip.vehicle_id.max_load_capacity:.1f} kg)!'
                 )
 
     @api.constrains('vehicle_id', 'state')
     def _check_vehicle_availability(self):
         """
-        RULE 3 & 4: Vehicle must be available when assigned.
-        TODO (Person B): Enhance this constraint as needed.
+        RULE 3: Vehicle must be available when saved to draft.
+        Retired or In Shop vehicles cannot be assigned.
         """
         for trip in self:
             if trip.vehicle_id and trip.state == 'draft':
                 if trip.vehicle_id.status in ('retired', 'in_shop'):
                     raise ValidationError(
                         f'Vehicle "{trip.vehicle_id.registration_number}" is '
-                        f'{trip.vehicle_id.status} and cannot be dispatched!'
+                        f'{trip.vehicle_id.status.replace("_", " ")} and cannot be assigned!'
                     )
 
     @api.constrains('driver_id', 'state')
     def _check_driver_availability(self):
         """
-        RULE 3: Drivers with expired licenses or Suspended status cannot be assigned.
-        TODO (Person B): Implement this constraint.
+        RULE 4: Drivers with expired licenses or Suspended status cannot be assigned.
         """
         for trip in self:
             if trip.driver_id and trip.state == 'draft':
@@ -171,57 +201,143 @@ class TransitTrip(models.Model):
                     )
                 if trip.driver_id.is_license_expired:
                     raise ValidationError(
-                        f'Driver "{trip.driver_id.name}" has an expired license!'
+                        f'Driver "{trip.driver_id.name}" has an expired license '
+                        f'(expired on {trip.driver_id.license_expiry})!'
+                    )
+
+    @api.constrains('vehicle_id', 'state')
+    def _check_vehicle_not_double_booked(self):
+        """
+        RULE 3 (safety net): Prevent assigning a vehicle that already has an
+        active dispatched trip. Catches concurrent or API-level assignments
+        that bypass the view domain filter.
+        """
+        for trip in self:
+            if trip.state in ('draft', 'dispatched') and trip.vehicle_id:
+                conflicting = self.search([
+                    ('vehicle_id', '=', trip.vehicle_id.id),
+                    ('state', '=', 'dispatched'),
+                    ('id', '!=', trip.id),
+                ], limit=1)
+                if conflicting:
+                    raise ValidationError(
+                        f'Vehicle "{trip.vehicle_id.registration_number}" is already '
+                        f'assigned to active trip "{conflicting.name}"!'
+                    )
+
+    @api.constrains('driver_id', 'state')
+    def _check_driver_not_double_booked(self):
+        """
+        RULE 4 (safety net): Prevent assigning a driver who already has an
+        active dispatched trip.
+        """
+        for trip in self:
+            if trip.state in ('draft', 'dispatched') and trip.driver_id:
+                conflicting = self.search([
+                    ('driver_id', '=', trip.driver_id.id),
+                    ('state', '=', 'dispatched'),
+                    ('id', '!=', trip.id),
+                ], limit=1)
+                if conflicting:
+                    raise ValidationError(
+                        f'Driver "{trip.driver_id.name}" is already '
+                        f'on active trip "{conflicting.name}"!'
                     )
 
     # ── State Transition Actions ───────────────────────────────────────────────
     def action_dispatch(self):
         """
         RULE 6: Dispatching a trip → vehicle and driver status → 'on_trip'.
-        TODO (Person B): Implement dispatch with full validation.
+
+        Validates that both vehicle and driver are still available at dispatch
+        time (a second-layer check beyond the domain filter).
         """
         for trip in self:
             if trip.state != 'draft':
                 raise UserError('Only Draft trips can be dispatched.')
+
             # Re-check vehicle status at dispatch time
             if trip.vehicle_id.status != 'available':
                 raise UserError(
-                    f'Vehicle "{trip.vehicle_id.registration_number}" is no longer available!'
+                    f'Vehicle "{trip.vehicle_id.registration_number}" is no longer '
+                    f'available (current status: {trip.vehicle_id.status.replace("_", " ")})!'
                 )
+
             # Re-check driver status at dispatch time
             if trip.driver_id.status != 'available':
                 raise UserError(
-                    f'Driver "{trip.driver_id.name}" is no longer available!'
+                    f'Driver "{trip.driver_id.name}" is no longer '
+                    f'available (current status: {trip.driver_id.status.replace("_", " ")})!'
                 )
             if trip.driver_id.is_license_expired:
                 raise UserError(
-                    f'Driver "{trip.driver_id.name}" has an expired license!'
+                    f'Driver "{trip.driver_id.name}" has an expired license '
+                    f'and cannot be dispatched!'
                 )
+
             # Apply status transitions
             trip.vehicle_id.status = 'on_trip'
             trip.driver_id.status = 'on_trip'
+            trip.date_dispatched = fields.Datetime.now()
             trip.state = 'dispatched'
+            
+            msg = f"Trip Dispatched<br/>Vehicle: {trip.vehicle_id.name}<br/>Driver: {trip.driver_id.name}<br/>Destination: {trip.destination}"
+            trip.message_post(body=msg)
+            trip.vehicle_id.message_post(body=f"Dispatched on Trip: {trip.name}")
+            trip.driver_id.message_post(body=f"Dispatched on Trip: {trip.name}")
 
     def action_complete(self):
         """
         RULE 7: Completing a trip → vehicle and driver status → 'available'.
-        TODO (Person B): Also update vehicle odometer from final_odometer.
+
+        Also updates vehicle odometer from final_odometer and records
+        the completion timestamp. Requires actual completion data.
         """
         for trip in self:
             if trip.state != 'dispatched':
                 raise UserError('Only Dispatched trips can be completed.')
+
+            # Require completion data before marking complete
+            if not trip.actual_distance:
+                raise UserError(
+                    'Please enter the Actual Distance (km) before completing the trip.'
+                )
+            if not trip.fuel_consumed:
+                raise UserError(
+                    'Please enter the Fuel Consumed (L) before completing the trip.'
+                )
+            if not trip.final_odometer:
+                raise UserError(
+                    'Please enter the Final Odometer reading before completing the trip.'
+                )
+
+            # Validate final odometer is not less than current odometer
+            if trip.final_odometer < trip.vehicle_id.odometer:
+                raise UserError(
+                    f'Final odometer ({trip.final_odometer:.1f} km) cannot be less than '
+                    f'the vehicle\'s current odometer ({trip.vehicle_id.odometer:.1f} km)!'
+                )
+
             # Update vehicle odometer
-            if trip.final_odometer:
-                trip.vehicle_id.odometer = trip.final_odometer
+            trip.vehicle_id.odometer = trip.final_odometer
+
             # Restore statuses
             trip.vehicle_id.status = 'available'
             trip.driver_id.status = 'available'
+
+            # Record completion timestamp
+            trip.date_completed = fields.Datetime.now()
             trip.state = 'completed'
+            
+            msg = f"Trip Completed<br/>Distance: {trip.actual_distance} km<br/>Fuel: {trip.fuel_consumed} L"
+            trip.message_post(body=msg)
+            trip.vehicle_id.message_post(body=f"Completed Trip: {trip.name}. Vehicle is now Available.")
+            trip.driver_id.message_post(body=f"Completed Trip: {trip.name}. Driver is now Available.")
 
     def action_cancel(self):
         """
-        RULE 8: Cancelling a dispatched trip restores vehicle and driver to 'available'.
-        TODO (Person B): Handle cancellation from both draft and dispatched states.
+        RULE 8: Cancelling a trip restores vehicle and driver to 'available'
+        if the trip was dispatched. Draft trips can also be cancelled.
         """
         for trip in self:
             if trip.state not in ('draft', 'dispatched'):
@@ -230,4 +346,17 @@ class TransitTrip(models.Model):
                 # Restore statuses only if we were dispatched
                 trip.vehicle_id.status = 'available'
                 trip.driver_id.status = 'available'
+                trip.vehicle_id.message_post(body=f"Trip Cancelled: {trip.name}. Vehicle is now Available.")
+                trip.driver_id.message_post(body=f"Trip Cancelled: {trip.name}. Driver is now Available.")
             trip.state = 'cancelled'
+            trip.message_post(body="Trip Cancelled")
+
+    def action_reset_draft(self):
+        """
+        Reset a cancelled trip back to Draft so it can be re-dispatched
+        after correcting any issues.
+        """
+        for trip in self:
+            if trip.state != 'cancelled':
+                raise UserError('Only Cancelled trips can be reset to Draft.')
+            trip.state = 'draft'

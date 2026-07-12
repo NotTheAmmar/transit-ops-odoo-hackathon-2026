@@ -18,6 +18,7 @@
 
         # Data / Sequences
         'data/sequences.xml',
+        'data/cron_jobs.xml',
 
         # Views
         'views/vehicle_views.xml',
@@ -42,8 +43,8 @@
     'assets': {
         'web.assets_backend': [
             'transit_ops/static/src/css/dashboard.css',
-            'transit_ops/static/src/xml/dashboard.xml',
             'transit_ops/static/src/js/dashboard.js',
+            'transit_ops/static/src/xml/dashboard.xml',
         ],
     },
     'application': True,
