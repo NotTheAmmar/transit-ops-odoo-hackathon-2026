@@ -67,6 +67,8 @@ class TransitMaintenance(models.Model):
         for record in self:
             if record.state != 'draft':
                 raise UserError('Only Draft maintenance records can be opened.')
+            if record.vehicle_id.status == 'retired':
+                raise UserError('Cannot perform maintenance on a retired vehicle.')
             record.vehicle_id.status = 'in_shop'
             record.state = 'open'
 
@@ -79,8 +81,14 @@ class TransitMaintenance(models.Model):
         for record in self:
             if record.state != 'open':
                 raise UserError('Only Open maintenance records can be closed.')
-            # Only restore to available if not retired
+            # Only restore to available if not retired and no other open maintenance logs
             if record.vehicle_id.status != 'retired':
-                record.vehicle_id.status = 'available'
+                open_logs_count = self.search_count([
+                    ('vehicle_id', '=', record.vehicle_id.id),
+                    ('state', '=', 'open'),
+                    ('id', '!=', record.id)
+                ])
+                if open_logs_count == 0:
+                    record.vehicle_id.status = 'available'
             record.date_end = fields.Date.today()
             record.state = 'done'

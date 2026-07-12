@@ -7,7 +7,7 @@
             <field name="name">Toyota Hiace Van</field>
             <field name="vehicle_type">van</field>
             <field name="max_load_capacity">500.0</field>
-            <field name="odometer">12500.0</field>
+            <field name="odometer">12552.0</field>
             <field name="acquisition_cost">25000.0</field>
             <field name="region">City Center</field>
             <field name="status">available</field>
@@ -21,6 +21,39 @@
             <field name="odometer">89000.0</field>
             <field name="acquisition_cost">95000.0</field>
             <field name="region">North</field>
+            <field name="status">on_trip</field>
+        </record>
+        
+        <record id="demo_vehicle_3" model="transit.vehicle">
+            <field name="registration_number">SEDAN-03</field>
+            <field name="name">Honda Civic Sedan</field>
+            <field name="vehicle_type">sedan</field>
+            <field name="max_load_capacity">300.0</field>
+            <field name="odometer">45000.0</field>
+            <field name="acquisition_cost">18000.0</field>
+            <field name="region">City Center</field>
+            <field name="status">available</field>
+        </record>
+
+        <record id="demo_vehicle_4" model="transit.vehicle">
+            <field name="registration_number">BUS-07</field>
+            <field name="name">Mercedes Benz Bus</field>
+            <field name="vehicle_type">bus</field>
+            <field name="max_load_capacity">2000.0</field>
+            <field name="odometer">120000.0</field>
+            <field name="acquisition_cost">75000.0</field>
+            <field name="region">South</field>
+            <field name="status">in_shop</field>
+        </record>
+
+        <record id="demo_vehicle_5" model="transit.vehicle">
+            <field name="registration_number">VAN-11</field>
+            <field name="name">Ford Transit Van</field>
+            <field name="vehicle_type">van</field>
+            <field name="max_load_capacity">800.0</field>
+            <field name="odometer">25000.0</field>
+            <field name="acquisition_cost">32000.0</field>
+            <field name="region">West</field>
             <field name="status">available</field>
         </record>
 
@@ -42,7 +75,7 @@
             <field name="license_expiry" eval="(datetime.date.today() + datetime.timedelta(days=730)).strftime('%Y-%m-%d')"/>
             <field name="contact_number">+1-555-0122</field>
             <field name="safety_score">98.0</field>
-            <field name="status">available</field>
+            <field name="status">on_trip</field>
         </record>
 
         <!-- Driver with expired license (test constraint) -->
@@ -55,5 +88,139 @@
             <field name="safety_score">85.0</field>
             <field name="status">available</field>
         </record>
+        
+        <record id="demo_driver_suspended" model="transit.driver">
+            <field name="name">Kim Lee</field>
+            <field name="license_number">DL-778899</field>
+            <field name="license_category">C</field>
+            <field name="license_expiry" eval="(datetime.date.today() + datetime.timedelta(days=180)).strftime('%Y-%m-%d')"/>
+            <field name="contact_number">+1-555-0155</field>
+            <field name="safety_score">60.0</field>
+            <field name="status">suspended</field>
+        </record>
+
+        <!-- ── Demo Trips ───────────────────────────────────────────────────── -->
+        <record id="demo_trip_1_completed" model="transit.trip">
+            <field name="name">TRIP/0001</field>
+            <field name="source">Warehouse A</field>
+            <field name="destination">Customer B</field>
+            <field name="planned_distance">50.0</field>
+            <field name="actual_distance">52.0</field>
+            <field name="cargo_weight">200.0</field>
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="driver_id" ref="demo_driver_1"/>
+            <field name="final_odometer">12552.0</field>
+            <field name="fuel_consumed">5.5</field>
+            <field name="state">completed</field>
+        </record>
+        
+        <record id="demo_trip_2_dispatched" model="transit.trip">
+            <field name="name">TRIP/0002</field>
+            <field name="source">Warehouse B</field>
+            <field name="destination">Customer C</field>
+            <field name="planned_distance">120.0</field>
+            <field name="cargo_weight">3000.0</field>
+            <field name="vehicle_id" ref="demo_vehicle_2"/>
+            <field name="driver_id" ref="demo_driver_2"/>
+            <field name="state">dispatched</field>
+        </record>
+        
+        <record id="demo_trip_3_draft" model="transit.trip">
+            <field name="name">TRIP/0003</field>
+            <field name="source">Port</field>
+            <field name="destination">Warehouse A</field>
+            <field name="planned_distance">85.0</field>
+            <field name="cargo_weight">450.0</field>
+            <field name="vehicle_id" ref="demo_vehicle_5"/>
+            <field name="driver_id" ref="demo_driver_1"/>
+            <field name="state">draft</field>
+        </record>
+        
+        <record id="demo_trip_4_cancelled" model="transit.trip">
+            <field name="name">TRIP/0004</field>
+            <field name="source">City Center</field>
+            <field name="destination">North Station</field>
+            <field name="planned_distance">20.0</field>
+            <field name="cargo_weight">150.0</field>
+            <field name="vehicle_id" ref="demo_vehicle_3"/>
+            <field name="driver_id" ref="demo_driver_1"/>
+            <field name="state">cancelled</field>
+        </record>
+
+        <!-- ── Demo Maintenance ─────────────────────────────────────────────── -->
+        <record id="demo_maintenance_open" model="transit.maintenance">
+            <field name="name">Engine Inspection</field>
+            <field name="vehicle_id" ref="demo_vehicle_4"/>
+            <field name="maintenance_type">preventive</field>
+            <field name="description">Routine engine check</field>
+            <field name="state">open</field>
+        </record>
+
+        <record id="demo_maintenance_done" model="transit.maintenance">
+            <field name="name">Tire Replacement</field>
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="maintenance_type">corrective</field>
+            <field name="description">Replaced all 4 tires</field>
+            <field name="cost">450.0</field>
+            <field name="state">done</field>
+        </record>
+
+        <!-- ── Demo Fuel Logs ───────────────────────────────────────────────── -->
+        <record id="demo_fuel_log_1" model="transit.fuel.log">
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="trip_id" ref="demo_trip_1_completed"/>
+            <field name="liters">5.5</field>
+            <field name="cost">11.0</field>
+            <field name="odometer_reading">12552.0</field>
+        </record>
+        <record id="demo_fuel_log_2" model="transit.fuel.log">
+            <field name="vehicle_id" ref="demo_vehicle_2"/>
+            <field name="liters">120.0</field>
+            <field name="cost">240.0</field>
+            <field name="odometer_reading">89000.0</field>
+        </record>
+        <record id="demo_fuel_log_3" model="transit.fuel.log">
+            <field name="vehicle_id" ref="demo_vehicle_5"/>
+            <field name="liters">40.0</field>
+            <field name="cost">80.0</field>
+        </record>
+        <record id="demo_fuel_log_4" model="transit.fuel.log">
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="liters">30.0</field>
+            <field name="cost">60.0</field>
+        </record>
+        <record id="demo_fuel_log_5" model="transit.fuel.log">
+            <field name="vehicle_id" ref="demo_vehicle_3"/>
+            <field name="liters">20.0</field>
+            <field name="cost">40.0</field>
+        </record>
+
+        <!-- ── Demo Expenses ────────────────────────────────────────────────── -->
+        <record id="demo_expense_1" model="transit.expense">
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="trip_id" ref="demo_trip_1_completed"/>
+            <field name="expense_type">toll</field>
+            <field name="amount">5.0</field>
+            <field name="description">Highway Toll</field>
+        </record>
+        <record id="demo_expense_2" model="transit.expense">
+            <field name="vehicle_id" ref="demo_vehicle_1"/>
+            <field name="expense_type">maintenance</field>
+            <field name="amount">450.0</field>
+            <field name="description">Tire Replacement (Manual Entry)</field>
+        </record>
+        <record id="demo_expense_3" model="transit.expense">
+            <field name="vehicle_id" ref="demo_vehicle_2"/>
+            <field name="expense_type">other</field>
+            <field name="amount">25.0</field>
+            <field name="description">Parking</field>
+        </record>
+        <record id="demo_expense_4" model="transit.expense">
+            <field name="vehicle_id" ref="demo_vehicle_5"/>
+            <field name="expense_type">toll</field>
+            <field name="amount">12.0</field>
+            <field name="description">Bridge Toll</field>
+        </record>
+
     </data>
 </odoo>
