@@ -1,5 +1,6 @@
 # Odoo Configuration
 odoo.conf
+odoo.config
 
 # Environment Variables
 .env
