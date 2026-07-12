@@ -64,14 +64,29 @@ class TransitDashboardController(http.Controller):
             if total_vehicles else 0
         )
 
+        Driver = request.env["transit.driver"]
+        Vehicle = request.env["transit.vehicle"]
+
+        drivers_on_duty = Driver.search_count([("status", "=", "on_trip")])
+
+        # Average fuel efficiency across all completed trips (distance/fuel)
+        completed_trips = Trip.search([("state", "=", "completed"), ("fuel_consumed", ">", 0)])
+        total_dist = sum(completed_trips.mapped("actual_distance"))
+        total_fuel = sum(completed_trips.mapped("fuel_consumed"))
+        fuel_efficiency = round(total_dist / total_fuel, 2) if total_fuel > 0 else 0.0
+
+        # Total operational cost across entire fleet
+        all_vehicles = Vehicle.search([])
+        total_operational_cost = sum(all_vehicles.mapped("total_operational_cost"))
+
         return {
             "active_vehicles": active_vehicles,
             "available_vehicles": available_vehicles,
             "vehicles_in_maintenance": vehicles_in_maintenance,
             "active_trips": active_trips,
             "pending_trips": pending_trips,
-            "drivers_on_duty": 0,
-            "fleet_utilization": fleet_utilization,
-            "fuel_efficiency": 0.0,
-            "total_operational_cost": 0.0,
+            "drivers_on_duty": drivers_on_duty,
+            "fleet_utilization": round(fleet_utilization, 1),
+            "fuel_efficiency": fuel_efficiency,
+            "total_operational_cost": round(total_operational_cost, 2),
         }
